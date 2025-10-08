@@ -57,7 +57,7 @@ A fully working minting application:
 ## 📬 Contact
 
 - Twitter / X: [@J0BSdev](https://x.com/J0BSdev)
-- GitHub: [LovroDev](https://github.com/LovroDev)
+- GitHub: [LovroDev](https://github.com/J0BSdev)
 - Email: `lovro.posel79@gmail.com`
 
 ---
