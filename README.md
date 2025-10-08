@@ -1,41 +1,68 @@
- Hi, I'm Lovro
+# 👨‍💻 Lovro Posel — Full-Stack Web3 Developer
 
-Junior Solidity Developer | Web3 Builder  
-
-🚀 Focused on building secure and scalable smart contracts using **Solidity** and **Foundry**.  
-Currently learning and experimenting with **ERC20 & ERC721**, dApps, and security best practices.  
-
-
-
-🛠 Skills
-- **Solidity**: ERC20 & ERC721 (mint, burn, pause, cap, URI storage)  
-- **Frameworks**: Foundry (forge build, forge test, forge script, deploy with broadcast)  
-- **Libraries**: OpenZeppelin (ERC20, ERC721 extensions, Ownable, Pausable, Burnable, Capped)  
-- **Testing**: Unit testing, fuzz testing, revert checks with Foundry  
-- **Blockchain Tools**: Etherscan verification, Sepolia testnet, Metamask  
-- **Version Control**: Git & GitHub  
+Hi, I'm Lovro — a full-stack Web3 developer focused on building clean, fast, and scalable dApps using modern tools like Solidity, Foundry, Next.js, and wagmi v2.
 
 ---
 
-## 📂 Projects
-### [JobsToken (ERC20)] https://github.com/LovroDev/blockchain-contracts/blob/main/src/tokens/erc20/JobsToken.sol
-- Features: mint, burn, transfer, approve.  
-- Full test suite in Foundry.  
-- Deployed on Sepolia & verified on Etherscan.  
+## 🔨 Tech Stack & Tools I Use
 
-### [JobsNFT (ERC721)] https://github.com/LovroDev/blockchain-contracts/blob/main/src/tokens/erc721/JobsNFT.sol
-- Features: metadata URI storage, mint.  
-- Built with OpenZeppelin + Foundry.  
-- Deployed & tested on Sepolia testnet.  
+### 🧱 Smart Contracts
+- **Solidity** — writing secure and gas-optimized smart contracts
+- **Foundry** — contract development, deployment, and testing framework
+- **Hardhat** (optional) — familiar with test environments and scripting
+
+### 🌐 Frontend dApp
+- **Next.js** — React-based framework for SSR + frontend logic
+- **Wagmi v2.17.5** — Ethereum React hooks for wallet interaction
+- **RainbowKit v2** — beautiful wallet UI/UX for multi-chain support
+- **Viem** — type-safe low-level Ethereum client
+- **TypeScript** — strict types and clean codebase
+- **JavaScript** — strong foundation and practical usage
+- **CSS (No Tailwind)** — manually styled interfaces
+
+### 🌍 Web3 Infrastructure
+- **IPFS (Pinata)** — NFT metadata and image hosting
+- **Etherscan** — contract verification and interaction
+- **Vercel** — deploy frontend with custom domains
+- **GitHub** — full version control, Git workflow, and CI
 
 ---
 
-## 🎯 Goals
-- Build production-ready ERC20/721 contracts.  
-- Learn advanced security patterns.  
-- Contribute to real-world Web3 projects.  
+## 🔗 Recent Projects
+
+### 🖼️ NFT Minting dApp  
+A fully working minting application:
+- WalletConnect integration (RainbowKit)
+- NFT minting via `mint()` and `safeMint()` from ERC-721
+- tokenURI pulling image + metadata from IPFS
+- Loading states and UX polish
+- Mobile + desktop responsive
+- GitHub + Etherscan links integrated
+- Deployed on **Vercel**
+
+> 🔗 [Live Demo](https://mint-d-app.vercel.app/)  
+> 💾 [GitHub Repo](https://github.com/LovroDev/JobsNFTFull)
 
 ---
 
-📫 Reach me on [Twitter] https://x.com/J0BSdev or check my GitHub projects https://github.com/LovroDev/blockchain-contracts/tree/main/src .  
+## 🚀 Goals
+
+- Continue building dApps on Ethereum and L2s (Base, Optimism, Arbitrum)
+- Contribute to open-source Web3 tools
+- Deliver freelance + client dApps (NFT drops, token launches, DeFi tools)
+- Grow as a blockchain engineer through real-world products
+
+---
+
+## 📬 Contact
+
+- Twitter / X: [@J0BSdev](https://x.com/J0BSdev)
+- GitHub: [LovroDev](https://github.com/LovroDev)
+- Email: `lovro.posel79@gmail.com`
+
+---
+
+> ⚡️ Let's build the future on-chain.
+
+
 
