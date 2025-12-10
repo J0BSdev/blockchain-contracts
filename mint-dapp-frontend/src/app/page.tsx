@@ -61,6 +61,28 @@ export default function Home() {
           alt="Minted NFT"
           style={{ maxWidth: '90vw', borderRadius: '10px', marginTop: '10px' }}
         />
+
+         {/* Footer */}
+      <footer style={{ marginTop: "3rem", fontSize: "0.9rem" }}>
+        <p>
+          <a
+            href="https://github.com/J0BSdev"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: "#aaa", textDecoration: "underline", marginRight: "1rem" }}
+          >
+            GitHub
+          </a>
+          <a
+            href="https://sepolia.etherscan.io/address/0x2A8294462F7424a71c786BaBa617B2e644a31393"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: "#aaa", textDecoration: "underline" }}
+          >
+            Etherscan
+          </a>
+        </p>
+      </footer>
       </div>
     )}
     </main>
