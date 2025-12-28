@@ -3,7 +3,7 @@ pragma solidity ^0.8.27;
 
 import {Script} from "forge-std/Script.sol";
 import {console} from "forge-std/console.sol";
-import {JobsNFTFull} from "src/JobsNFTFull.sol";
+import {JobsNFTFull} from "../../erc721/JobsNFTFull.sol";
 
 contract JobsNFTFullScript is Script {
     function setUp() public {}

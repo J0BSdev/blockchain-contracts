@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.27;
 
 import "forge-std/Script.sol";
-import {JobsTokenFull} from "../src/JobsTokenFull.sol";
+import {JobsTokenFull} from "../../erc20/JobsTokenFull.sol";
 
 contract DeployJobsTokenFullScript is Script {
     function run() external {

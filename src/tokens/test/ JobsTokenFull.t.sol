@@ -2,7 +2,7 @@
 pragma solidity ^0.8.20;
 
 import "forge-std/Test.sol";
-import {JobsTokenFull} from "../src/JobsTokenFull.sol"; // 
+import {JobsTokenFull} from "../erc20/JobsTokenFull.sol"; // 
 
 contract JobsTokenFullTest is Test {
     JobsTokenFull token;

@@ -1,0 +1,12 @@
+{
+    "name": "Jobs NFT #1",
+    "description": "Autorska NFT kolekcija Lovre Posela – Builder generacija V2, deployano preko Foundryja na Sepolia testnet.",
+    "image": "https://chocolate-official-crocodile-904.mypinata.cloud/ipfs/bafybeiboxucsdfbeqmtfvzyii45i3rdmqi6eznmj4kzaraxi4adtexsalu/1",
+    "attributes": [
+      { "trait_type": "Creator", "value": "Lovro Posel" },
+      { "trait_type": "Utility", "value": "Burnable, Enumerable, Pausable, Ownable" },
+      { "trait_type": "Generation", "value": "V2" },
+      { "trait_type": "Network", "value": "Sepolia" }
+    ]
+  }
+  
