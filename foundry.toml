@@ -12,7 +12,7 @@ libs = ["lib"]
 script = "src/tokens/script/deploy"
 
 # gdje su testovi
-test = "src/tokens/test"
+test = "test"
 
 cache_path = "cache"
 

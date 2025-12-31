@@ -14,7 +14,12 @@ contract JobsTokenFullV2_Test is Test {
 
     function setUp() public {
         vm.prank(admin);
-        token = new JobsTokenFullV2(); // ✅ ako constructor traži parametre, ubaci ih
+        token = new JobsTokenFullV2(
+            "JobsTokenV2",
+            "JBT2",
+            10_000_000 ether,
+            admin
+        );
     }
 
     function test_totalSupply_doesNotChangeOnTransfer() public {
