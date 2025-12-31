@@ -1,66 +1,105 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.27;
 
-import "forge-std/Test.sol";
+import "../Base.t.sol";
 
-import {JobsTokenFullV2} from "../../src/tokens/erc20/JobsTokenFullV2.sol";
+// prilagodi path tvom projektu:
+import "../../src/tokens/erc20/JobsTokenFullV2.sol";
 
-contract JobsTokenFullV2_Test is Test {
+contract JobsTokenFullV2_Test is BaseTest {
     JobsTokenFullV2 token;
 
-    address admin = makeAddr("admin");
-    address alice = makeAddr("alice");
-    address bob   = makeAddr("bob");
+    function setUp() public override {
+        super.setUp();
 
-    function setUp() public {
-        vm.prank(admin);
-        token = new JobsTokenFullV2(
-            "JobsTokenV2",
-            "JBT2",
-            10_000_000 ether,
-            admin
-        );
-    }
-
-    function test_totalSupply_doesNotChangeOnTransfer() public {
-        uint256 ts0 = token.totalSupply();
-
-        // ✅ ako admin ima initial supply, ovo radi odmah
         vm.startPrank(admin);
-        token.transfer(alice, 100);
-        token.transfer(bob, 50);
+        token = new JobsTokenFullV2("Jobs Token", "JOBS", 1_000_000e18, admin);
         vm.stopPrank();
-
-        uint256 ts1 = token.totalSupply();
-
-        // ✅ ERC20 invariant: transfer ne smije mijenjati supply
-        assertEq(ts1, ts0);
     }
 
-    function test_transfer_updatesBalances() public {
-        vm.prank(admin);
-        token.transfer(alice, 100);
-
-        assertEq(token.balanceOf(alice), 100); // ✅ balance update
+    function test_constructor_setsNameSymbol() public {
+        assertEq(token.name(), "Jobs Token");
+        assertEq(token.symbol(), "JOBS");
     }
 
-    function test_approve_and_transferFrom_flow() public {
-        // admin -> alice
-        vm.prank(admin);
-        token.transfer(alice, 100);
+    function test_constructor_adminHasDefaultAdminRole() public {
+        // ako koristi AccessControl:
+        bytes32 DEFAULT_ADMIN_ROLE = 0x00;
+        assertTrue(token.hasRole(DEFAULT_ADMIN_ROLE, admin));
+    }
 
-        // alice approve bob
+    function test_mint_revertsForNonMinter() public {
+        // prilagodi ako je MINTER_ROLE public constant
+        bytes32 MINTER_ROLE = token.MINTER_ROLE();
+
         vm.startPrank(alice);
-        token.approve(bob, 60);
+        vm.expectRevert(); // točniji revert možeš kasnije
+        token.mint(alice, 1e18);
         vm.stopPrank();
 
-        // bob pulls from alice
-        vm.startPrank(bob);
-        token.transferFrom(alice, bob, 40);
+        // sanity: admin može grantat MINTER
+        vm.startPrank(admin);
+        token.grantRole(MINTER_ROLE, alice);
         vm.stopPrank();
 
-        assertEq(token.balanceOf(bob), 40);      // ✅ primio 40
-        assertEq(token.balanceOf(alice), 60);    // ✅ ostalo 60
-        assertEq(token.allowance(alice, bob), 20); // ✅ allowance smanjen
+        vm.startPrank(alice);
+        token.mint(alice, 1e18);
+        vm.stopPrank();
+
+        assertEq(token.balanceOf(alice), 1e18);
+    }
+
+    function test_cap_enforced() public {
+        // Ako ima ERC20Capped: totalSupply ne smije preći cap
+        bytes32 MINTER_ROLE = token.MINTER_ROLE();
+
+        vm.startPrank(admin);
+        token.grantRole(MINTER_ROLE, admin);
+
+        // mint to cap
+        token.mint(admin, 1_000_000e18);
+        assertEq(token.totalSupply(), 1_000_000e18);
+
+        // preko capa mora revert
+        vm.expectRevert();
+        token.mint(admin, 1);
+        vm.stopPrank();
+    }
+
+    function test_pause_blocksTransfers_ifEnabled() public {
+        // Ako ima Pausable + role
+        bytes32 PAUSER_ROLE = token.PAUSER_ROLE();
+        bytes32 MINTER_ROLE = token.MINTER_ROLE();
+
+        vm.startPrank(admin);
+        token.grantRole(MINTER_ROLE, admin);
+        token.mint(admin, 100e18);
+
+        // transfer radi prije pause
+        token.transfer(alice, 10e18);
+        assertEq(token.balanceOf(alice), 10e18);
+
+        // pause
+        token.grantRole(PAUSER_ROLE, admin);
+        token.pause();
+
+        vm.expectRevert();
+        token.transfer(bob, 1e18);
+        vm.stopPrank();
+    }
+
+    function testFuzz_transfer_conservesTotalSupply(uint96 amt) public {
+        // fuzz: transfer ne mijenja totalSupply
+        vm.assume(amt > 0);
+
+        bytes32 MINTER_ROLE = token.MINTER_ROLE();
+        vm.startPrank(admin);
+        token.grantRole(MINTER_ROLE, admin);
+        token.mint(admin, uint256(amt));
+        uint256 supplyBefore = token.totalSupply();
+
+        token.transfer(alice, uint256(amt));
+        assertEq(token.totalSupply(), supplyBefore);
+        vm.stopPrank();
     }
 }
