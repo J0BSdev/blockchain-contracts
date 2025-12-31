@@ -1,0 +1,42 @@
+[profile.default]
+# tvoj stvarni source folder
+src = "src/tokens"
+
+# build output
+out = "out"
+
+# gdje su dependencyji
+libs = ["lib"]
+
+# gdje su deploy skripte
+script = "src/tokens/script/deploy"
+
+# gdje su testovi
+test = "src/tokens/test"
+
+cache_path = "cache"
+
+# compiler (kakav si imao prije)
+solc_version = "0.8.27"
+
+optimizer = true
+optimizer_runs = 200
+
+# ⛔️ BITNO: prije si bio na PARIS (zato je prije radilo)
+evm_version = "prague"
+
+# remappings – klasični, ništa fancy
+remappings = [
+  "forge-std/=lib/forge-std/src/",
+  "@openzeppelin/=lib/openzeppelin-contracts/"
+]
+
+# da može čitati .env i raditi deploy
+fs_permissions = [
+  { access = "read", path = "./" }
+]
+
+[fmt]
+line_length = 100
+tab_width = 4
+bracket_spacing = true
