@@ -58,4 +58,4 @@ contract JobsTokenFullV2 is ERC20, ERC20Permit, ERC20Burnable, ERC20Capped, Paus
     {
         super._update(from, to, value);
     }
-}
+} 
