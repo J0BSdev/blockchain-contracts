@@ -16,7 +16,9 @@ contract JobsTokenStaking_Admin_Test is Test {
     function setUp() public {
         vm.startPrank(admin);
         token = new JobsTokenFullV2("Jobs Token", "JOBS", CAP, admin);
-        staking = new JobsTokenStaking(address(token), admin, admin);
+        // Constructor: JobsTokenStaking(address stakingToken_, address rewardToken_, address admin_)
+        // rewardToken_ mora biti isti kao stakingToken_ (same-token model)
+        staking = new JobsTokenStaking(address(token), address(token), admin);
 
         token.grantRole(token.MINTER_ROLE(), admin);
         token.mint(alice, 1_000e18);

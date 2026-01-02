@@ -22,9 +22,10 @@ contract JobsTokenStaking_Test is Test {
         vm.startPrank(admin);
         token = new JobsTokenFullV2("Jobs Token", "JOBS", CAP, admin);
 
-        // deploy staking (PRILAGODI constructor ako je drugačiji)
-        // ispravno: JobsTokenStaking(address token, address admin, address treasury)
-        staking = new JobsTokenStaking(address(token), admin, admin);
+        // deploy staking
+        // Constructor: JobsTokenStaking(address stakingToken_, address rewardToken_, address admin_)
+        // rewardToken_ mora biti isti kao stakingToken_ (same-token model)
+        staking = new JobsTokenStaking(address(token), address(token), admin);
 
         // ako staking treba MINTER_ROLE ili allowance, odradi tu:
         // token.grantRole(token.MINTER_ROLE(), address(staking));
@@ -42,6 +43,14 @@ contract JobsTokenStaking_Test is Test {
         token.approve(address(staking), type(uint256).max);
         vm.prank(bob);
         token.approve(address(staking), type(uint256).max);
+
+        // Prefund rewards za staking (potrebno za prefunded pool model)
+        vm.startPrank(admin);
+        uint256 rewardAmount = 10_000e18; // 10k tokena za rewards
+        token.mint(admin, rewardAmount);
+        token.transfer(address(staking), rewardAmount);
+        staking.notifyRewardAmount(rewardAmount);
+        vm.stopPrank();
     }
 
     // ---------- STAKE ----------
@@ -56,16 +65,19 @@ contract JobsTokenStaking_Test is Test {
         uint256 amount = 100e18;
 
         uint256 aliceBefore = token.balanceOf(alice);
+        uint256 stakingBefore = token.balanceOf(address(staking));
 
         vm.prank(alice);
         staking.stake(amount);
 
-        // PRILAGODI getter nazive:
-        assertEq(staking.balanceOf(alice), amount);     // ili staking.stakedBalance(alice)
+        // Provjeri staking balances
+        assertEq(staking.balanceOf(alice), amount);
         assertEq(staking.totalStaked(), amount);
 
+        // Provjeri token balances
         assertEq(token.balanceOf(alice), aliceBefore - amount);
-        assertEq(token.balanceOf(address(staking)), amount);
+        // Staking kontrakt ima: rewards pool + staked amount
+        assertEq(token.balanceOf(address(staking)), stakingBefore + amount);
     }
 
     // ---------- WITHDRAW ----------
@@ -86,52 +98,56 @@ contract JobsTokenStaking_Test is Test {
         staking.stake(amount);
 
         uint256 aliceMid = token.balanceOf(alice);
+        uint256 stakingMid = token.balanceOf(address(staking));
 
         vm.prank(alice);
         staking.unstake(40e18);
 
-        // PRILAGODI getter:
+        // Provjeri staking balances
         assertEq(staking.balanceOf(alice), 60e18);
         assertEq(staking.totalStaked(), 60e18);
 
+        // Provjeri token balances
         assertEq(token.balanceOf(alice), aliceMid + 40e18);
-        assertEq(token.balanceOf(address(staking)), 60e18);
+        // Staking kontrakt ima: rewards pool + remaining staked (60e18)
+        assertEq(token.balanceOf(address(staking)), stakingMid - 40e18);
     }
 
     // ---------- REWARDS / CLAIM (ako postoji) ----------
     // Ovo radi samo ako imaš earned/claim logiku. Ako nemaš, izbaci ovaj blok.
 
     function test_rewards_earned_increases_over_time() public {
-        // pretpostavka: reward accrual je time-based
-        // ako je block-based, koristi vm.roll
-
         vm.prank(alice);
         staking.stake(100e18);
 
-        // premotaj vrijeme
-        vm.warp(block.timestamp + 7 days);
+        // premotaj vrijeme (rewards se akumuliraju)
+        vm.warp(block.timestamp + 1 days);
 
-        // PRILAGODI naziv:
-        uint256 e = staking.rewardDebt(alice);
-        assertGt(e, 0);
+        // Provjeri pending rewards (trebaju biti > 0)
+        uint256 pending = staking.pendingRewards(alice);
+        assertGt(pending, 0);
     }
 
     function test_claim_pays_rewards() public {
         vm.prank(alice);
         staking.stake(100e18);
 
-        vm.warp(block.timestamp + 7 days);
+        // Premotaj vrijeme da se akumuliraju rewards
+        vm.warp(block.timestamp + 1 days);
 
         uint256 before = token.balanceOf(alice);
+        uint256 pendingBefore = staking.pendingRewards(alice);
+        assertGt(pendingBefore, 0, "Should have pending rewards");
 
         vm.prank(alice);
         staking.claim();
 
         uint256 afterBal = token.balanceOf(alice);
-        assertGt(afterBal, before);
+        assertGt(afterBal, before, "Balance should increase after claim");
 
-        // rewardDebt se resetira
-        assertEq(staking.rewardDebt(alice), 0);
+        // Provjeri da su rewards claimani
+        uint256 pendingAfter = staking.pendingRewards(alice);
+        assertLt(pendingAfter, pendingBefore, "Pending rewards should decrease after claim");
     }
 
     // ---------- MULTI-USER FAIRNESS (osnovni sanity) ----------
