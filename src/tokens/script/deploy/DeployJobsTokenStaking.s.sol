@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.27;
 
-import "forge-std/Script.sol";
+import {Script, console2} from "forge-std/Script.sol";
 
 // prilagodi path ako ti je drugačiji
 import {JobsTokenStaking} from "../../staking/JobsTokenStaking.sol";
