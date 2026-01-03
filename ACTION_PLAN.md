@@ -93,14 +93,61 @@ forge verify-contract \
 
 **1. Instaliraj Slither:**
 
+**Opcija A: Preko pipx (Najlakše - preporučeno):**
 ```bash
-# Python 3.8+ required
+# Instaliraj pipx ako nemaš
+sudo apt install pipx
+pipx ensurepath
+
+# Instaliraj Slither
+pipx install slither-analyzer
+
+# Koristi
+pipx run slither .
+```
+
+**Opcija B: Preko virtualenv:**
+```bash
+# Instaliraj python3-venv (jednom)
+sudo apt install python3.12-venv
+
+# Kreiraj virtual environment
+python3 -m venv venv
+
+# Aktiviraj virtual environment
+source venv/bin/activate
+
+# Upgrade pip
+pip install --upgrade pip
+
+# Instaliraj Slither
 pip install slither-analyzer
 
-# Ili s virtualenv
-python3 -m venv venv
+# Provjeri instalaciju
+slither --version
+```
+
+**Napomena:** Svaki put kada koristiš Slither s virtualenv, aktiviraj virtual environment:
+```bash
 source venv/bin/activate
-pip install slither-analyzer
+```
+
+**Opcija C: Preko --user flag (brzo, ali ne preporučeno):**
+```bash
+# Instaliraj u user directory
+pip3 install --user slither-analyzer
+
+# Dodaj u PATH
+export PATH=$PATH:$HOME/.local/bin
+
+# Provjeri
+slither --version
+```
+
+**Quick Install Script:**
+```bash
+# Pokreni helper script
+./install_slither.sh
 ```
 
 **2. Pokreni Analizu:**
