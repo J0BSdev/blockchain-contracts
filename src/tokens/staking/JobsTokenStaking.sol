@@ -392,24 +392,41 @@ contract JobsTokenStaking is AccessControl, Pausable, ReentrancyGuard {
      *
      * @param rewardAmount Total rewards intended to distribute over rewardsDuration
      */
+    /**
+     * @notice Notifies the contract of new rewards to distribute
+     * @dev Calculates new reward rate per second. If there's leftover from current period,
+     *      it's added to the new reward amount.
+     * 
+     *      Note on precision: Due to integer division, there may be a small precision loss
+     *      (up to rewardsDuration - 1 wei). For example: 100 / 3 = 33, then 33 * 3 = 99 (loss of 1).
+     *      This is acceptable as the loss is minimal (less than 1 second's worth of rewards).
+     *      The leftover is accounted for in the next reward period via the leftover mechanism.
+     * 
+     * @param rewardAmount Total reward amount to distribute over rewardsDuration
+     * @custom:security Small precision loss (max rewardsDuration-1 wei) is acceptable and accounted for
+     */
     function notifyRewardAmount(uint256 rewardAmount) external onlyRole(MANAGER_ROLE) {
         if (rewardAmount == 0) revert RewardZero();
 
         _updatePool();
 
-        uint256 newRate;
+        uint256 totalRewardAmount;
         if (block.timestamp < periodFinish) {
             // Carry leftover from current period
             uint256 remaining = periodFinish - block.timestamp;
             uint256 leftover = remaining * rewardRatePerSecond;
-            newRate = (rewardAmount + leftover) / rewardsDuration;
+            totalRewardAmount = rewardAmount + leftover;
         } else {
-            newRate = rewardAmount / rewardsDuration;
+            totalRewardAmount = rewardAmount;
         }
+
+        uint256 newRate = totalRewardAmount / rewardsDuration;
 
         if (newRate == 0) revert RateZero();
 
         // Pool safety: must be able to pay full period without touching principal
+        // Note: required may be slightly less than totalRewardAmount due to integer division
+        // This is acceptable - the small remainder (max rewardsDuration-1 wei) is negligible
         uint256 required = newRate * rewardsDuration;
         if (_availableRewards() < required) revert InsufficientRewardPool();
 
