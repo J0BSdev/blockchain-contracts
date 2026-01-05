@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.27;
+pragma solidity ^0.8.30;
 
 import "forge-std/Script.sol";
 import {JobsTokenVestingERC20} from "../../vesting/JobsTokenVestingERC20.sol";
