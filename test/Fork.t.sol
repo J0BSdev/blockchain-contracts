@@ -94,6 +94,10 @@ contract ForkTest is Test {
         assertEq(token.totalSupply(), INITIAL_MINT + 20_000_000e18);
     }
 
+    /**
+     * @notice Tests that staking functionality works on forked blockchain
+     * @dev Verifies that users can approve and stake tokens
+     */
     function testFork_stakingWorks() public {
         vm.startPrank(alice);
         
@@ -107,6 +111,10 @@ contract ForkTest is Test {
         vm.stopPrank();
     }
 
+    /**
+     * @notice Tests that reward distribution works correctly on forked blockchain
+     * @dev Verifies that rewards are distributed over time and can be claimed
+     */
     function testFork_rewardsWork() public {
         // Setup: Alice stakes
         vm.startPrank(alice);
@@ -140,8 +148,9 @@ contract ForkTest is Test {
     // =============================================================
 
     /**
-     * @notice Test timestamp manipulation (miner može manipulirati ±15 sekundi)
-     * @dev Simulira scenarij gdje miner postavlja timestamp malo unaprijed
+     * @notice Tests timestamp manipulation attack scenario (miner can manipulate ±15 seconds)
+     * @dev Simulates scenario where miner sets timestamp slightly forward
+     *      Verifies that rewards calculation still works correctly even with timestamp manipulation
      */
     function testFork_timestampManipulation() public {
         // Setup: Alice stakes
@@ -177,8 +186,9 @@ contract ForkTest is Test {
     }
 
     /**
-     * @notice Test reorg simulation (blockchain reorganizacija)
-     * @dev Simulira scenarij gdje se blockchain reorganizira i timestamp se mijenja
+     * @notice Tests blockchain reorganization (reorg) attack scenario
+     * @dev Simulates scenario where blockchain reorganizes and timestamp changes
+     *      Verifies that rewards calculation handles reorgs correctly
      */
     function testFork_reorgSimulation() public {
         // Setup: Alice stakes
@@ -213,7 +223,9 @@ contract ForkTest is Test {
     }
 
     /**
-     * @notice Test vesting s timestamp manipulation
+     * @notice Tests vesting contract with timestamp manipulation
+     * @dev Verifies that vesting calculations are resilient to timestamp manipulation
+     *      within acceptable bounds (±15 seconds is negligible over 30 days)
      */
     function testFork_vestingTimestampManipulation() public {
         // Setup: Create vesting
@@ -241,7 +253,8 @@ contract ForkTest is Test {
     }
 
     /**
-     * @notice Test da periodFinish ograničava rewards čak i s timestamp manipulation
+     * @notice Tests that periodFinish limits rewards even with timestamp manipulation
+     * @dev Verifies that rewards stop accruing after periodFinish regardless of timestamp manipulation
      */
     function testFork_periodFinishProtection() public {
         // Setup
@@ -272,7 +285,9 @@ contract ForkTest is Test {
     }
 
     /**
-     * @notice Test multiple users s timestamp manipulation
+     * @notice Tests multiple users staking with timestamp manipulation
+     * @dev Verifies that rewards are distributed correctly among multiple users
+     *      even when timestamp is manipulated, with larger stakers receiving more rewards
      */
     function testFork_multipleUsersTimestampManipulation() public {
         // Setup: Alice i Bob stake
@@ -314,7 +329,9 @@ contract ForkTest is Test {
     // =============================================================
 
     /**
-     * @notice Test da kontrakt radi čak i ako se timestamp mijenja unutar granica
+     * @notice Tests that contract works correctly when timestamp changes within acceptable bounds
+     * @dev Verifies that rewards calculation handles various timestamp values within
+     *      miner manipulation limits (±15 seconds) correctly
      */
     function testFork_timestampWithinBounds() public {
         vm.startPrank(alice);
