@@ -68,13 +68,16 @@ contract ForkTest is Test {
         vesting = new JobsTokenVesting(address(token));
         vesting.setStaking(address(staking));
         
-        // Grant MINTER_ROLE staking kontraktu
-        token.grantRole(token.MINTER_ROLE(), address(staking));
+        // Grant MINTER_ROLE admin-u prvo (da može mintati)
+        token.grantRole(token.MINTER_ROLE(), admin);
         
         // Mint initial tokens
         token.mint(admin, INITIAL_MINT);
         token.mint(alice, 10_000_000e18);
         token.mint(bob, 10_000_000e18);
+        
+        // Grant MINTER_ROLE staking kontraktu (za buduće mintanje)
+        token.grantRole(token.MINTER_ROLE(), address(staking));
         
         vm.stopPrank();
     }
@@ -136,11 +139,15 @@ contract ForkTest is Test {
         uint256 pending = staking.pendingRewards(alice);
         assertGt(pending, 0, "Should have pending rewards");
 
+        // Check balance before claim
+        uint256 balanceBefore = token.balanceOf(alice);
+        
         // Claim
         vm.prank(alice);
         staking.claim();
         
-        assertGt(token.balanceOf(alice), 10_000_000e18, "Should have received rewards");
+        // Should have more tokens after claiming rewards
+        assertGt(token.balanceOf(alice), balanceBefore, "Should have received rewards");
     }
 
     // =============================================================
@@ -174,15 +181,24 @@ contract ForkTest is Test {
         uint256 pending1 = staking.pendingRewards(alice);
         assertGt(pending1, 0, "Should have pending rewards even with timestamp manipulation");
 
-        // Warp normalno naprijed
-        vm.warp(block.timestamp + 1 days);
+        // Warp normalno naprijed (ali ne preko periodFinish)
+        uint256 timeBeforeFinish = periodFinish - block.timestamp;
+        if (timeBeforeFinish > 1 days) {
+            vm.warp(block.timestamp + 1 days);
+        } else {
+            vm.warp(periodFinish - 1); // Warp do 1 sekunde prije periodFinish
+        }
         uint256 pending2 = staking.pendingRewards(alice);
         assertGt(pending2, pending1, "Rewards should increase over time");
 
         // Provjeri da periodFinish još uvijek ograničava
-        vm.warp(periodFinish + 1);
+        vm.warp(periodFinish);
         uint256 pending3 = staking.pendingRewards(alice);
-        assertEq(pending3, pending2, "Rewards should stop after periodFinish");
+        
+        // Warp nakon periodFinish - rewards bi trebali biti isti
+        vm.warp(periodFinish + 1000);
+        uint256 pending4 = staking.pendingRewards(alice);
+        assertEq(pending4, pending3, "Rewards should stop after periodFinish");
     }
 
     /**
