@@ -20,6 +20,13 @@ contract JobsTokenFullV2 is ERC20, ERC20Permit, ERC20Burnable, ERC20Capped, Paus
 
     error ZeroAddress();
 
+    /**
+     * @notice Deploys a new JobsTokenFullV2 contract
+     * @param name_ Token name (e.g., "Jobs Token")
+     * @param symbol_ Token symbol (e.g., "JOBS")
+     * @param cap_ Maximum supply cap (in token units with 18 decimals)
+     * @param admin_ Address that will receive DEFAULT_ADMIN_ROLE and PAUSER_ROLE
+     */
     constructor(
         string memory name_,
         string memory symbol_,
@@ -36,16 +43,28 @@ contract JobsTokenFullV2 is ERC20, ERC20Permit, ERC20Burnable, ERC20Capped, Paus
         _grantRole(PAUSER_ROLE, admin_);
     }
 
-    // --- Mint (staking dobije MINTER_ROLE) ---
+    /**
+     * @notice Mints new tokens to the specified address
+     * @dev Only callable by addresses with MINTER_ROLE
+     * @param to Address to receive the minted tokens
+     * @param amount Amount of tokens to mint (in token units with 18 decimals)
+     */
     function mint(address to, uint256 amount) external onlyRole(MINTER_ROLE) {
         _mint(to, amount);
     }
 
-    // --- Emergency controls ---
+    /**
+     * @notice Pauses all token transfers, minting, and burning
+     * @dev Only callable by addresses with PAUSER_ROLE
+     */
     function pause() external onlyRole(PAUSER_ROLE) {
         _pause();
     }
 
+    /**
+     * @notice Unpauses all token transfers, minting, and burning
+     * @dev Only callable by addresses with PAUSER_ROLE
+     */
     function unpause() external onlyRole(PAUSER_ROLE) {
         _unpause();
     }

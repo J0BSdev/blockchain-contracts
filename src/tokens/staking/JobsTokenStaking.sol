@@ -365,8 +365,8 @@ contract JobsTokenStaking is AccessControl, Pausable, ReentrancyGuard {
     // =============================================================
 
     /**
-     * @notice Set rewards duration (only when no active period).
-     * @dev Must be called when block.timestamp > periodFinish to avoid mid-period changes.
+     * @notice Sets the rewards duration (only when no active period)
+     * @dev Must be called when block.timestamp > periodFinish to avoid mid-period changes
      * @param newDuration New rewards duration in seconds
      */
     function setRewardsDuration(uint256 newDuration) external onlyRole(MANAGER_ROLE) {
@@ -378,8 +378,11 @@ contract JobsTokenStaking is AccessControl, Pausable, ReentrancyGuard {
     }
 
     /**
-     * @notice Start or top-up a rewards period using prefunded pool model.
-     * @dev Correct flow:
+     * @notice Notifies the contract of new rewards to distribute
+     * @dev Calculates new reward rate per second. If there's leftover from current period,
+     *      it's added to the new reward amount.
+     * 
+     *      Correct flow:
      *      1) Transfer reward tokens to THIS contract (extra tokens; not principal)
      *      2) Call notifyRewardAmount(rewardAmount)
      *
@@ -389,20 +392,13 @@ contract JobsTokenStaking is AccessControl, Pausable, ReentrancyGuard {
      *
      *      Safety: must have enough availableRewards to cover full promised duration:
      *        availableRewards >= newRate * rewardsDuration
-     *
-     * @param rewardAmount Total rewards intended to distribute over rewardsDuration
-     */
-    /**
-     * @notice Notifies the contract of new rewards to distribute
-     * @dev Calculates new reward rate per second. If there's leftover from current period,
-     *      it's added to the new reward amount.
      * 
      *      Note on precision: Due to integer division, there may be a small precision loss
      *      (up to rewardsDuration - 1 wei). For example: 100 / 3 = 33, then 33 * 3 = 99 (loss of 1).
      *      This is acceptable as the loss is minimal (less than 1 second's worth of rewards).
      *      The leftover is accounted for in the next reward period via the leftover mechanism.
      * 
-     * @param rewardAmount Total reward amount to distribute over rewardsDuration
+     * @param rewardAmount Total reward amount to distribute over rewardsDuration (in token units with 18 decimals)
      * @custom:security Small precision loss (max rewardsDuration-1 wei) is acceptable and accounted for
      */
     function notifyRewardAmount(uint256 rewardAmount) external onlyRole(MANAGER_ROLE) {
@@ -456,12 +452,12 @@ contract JobsTokenStaking is AccessControl, Pausable, ReentrancyGuard {
     }
 
     /**
-     * @notice Rescue non-staking tokens accidentally sent to this contract.
+     * @notice Rescues non-staking tokens accidentally sent to this contract
      * @dev Because stakingToken == rewardsToken and also contains principal and rewards pool,
-     *      rescuing stakingToken is FORBIDDEN.
+     *      rescuing stakingToken is FORBIDDEN
      * @param token Token address to rescue
-     * @param to Receiver
-     * @param amount Amount to rescue
+     * @param to Address to receive the rescued tokens
+     * @param amount Amount of tokens to rescue (in token units with 18 decimals)
      */
     function rescueERC20(address token, address to, uint256 amount) external onlyRole(DEFAULT_ADMIN_ROLE) {
         if (token == address(stakingToken)) revert ForbiddenRescue();

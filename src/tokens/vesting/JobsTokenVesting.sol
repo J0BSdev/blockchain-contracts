@@ -62,7 +62,10 @@ contract JobsTokenVesting is Ownable, ReentrancyGuard {
 
     // --- ADMIN FUNKCIJE ---
 
-    /// @notice Postavlja adresu staking kontrakta (samo jednom)
+    /**
+     * @notice Sets the staking contract address (can only be called once)
+     * @param staking_ Address of the staking contract that can create vesting schedules
+     */
     function setStaking(address staking_) external onlyOwner {
         require(staking == address(0), "Staking already set");
         require(staking_ != address(0), "Staking zero");
@@ -70,13 +73,21 @@ contract JobsTokenVesting is Ownable, ReentrancyGuard {
         emit StakingSet(staking_);
     }
 
-    /// @notice Owner može spasiti tokene u slučaju bug-a ili viška
+    /**
+     * @notice Allows owner to rescue tokens in case of bugs or excess tokens
+     * @param to Address to receive the rescued tokens
+     * @param amount Amount of tokens to rescue
+     */
     function rescueTokens(address to, uint256 amount) external onlyOwner {
         require(to != address(0), "To zero");
         token.safeTransfer(to, amount);
     }
 
-    /// @notice Owner može ručno revoke-at schedule (ako želiš tu opciju)
+    /**
+     * @notice Allows owner to revoke a vesting schedule
+     * @param beneficiary Address of the beneficiary whose vesting is being revoked
+     * @param index Index of the vesting schedule to revoke
+     */
     function revoke(address beneficiary, uint256 index) external onlyOwner {
         Schedule storage s = schedules[beneficiary][index];
         require(!s.revoked, "Already revoked");
@@ -90,7 +101,14 @@ contract JobsTokenVesting is Ownable, ReentrancyGuard {
 
     // --- GLAVNA API FUNKCIJA KOJU ZOVE STAKING KONTRAKT ---
 
-    /// @notice Kreira novi vesting schedule (smije zvati SAMO staking kontrakt)
+    /**
+     * @notice Creates a new vesting schedule (only callable by staking contract)
+     * @param beneficiary Address that will receive the vested tokens
+     * @param amount Total amount of tokens to vest (in token units with 18 decimals)
+     * @param start Timestamp when vesting starts
+     * @param duration Duration of vesting period in seconds
+     * @return index Index of the newly created vesting schedule
+     */
     function createVesting(
         address beneficiary,
         uint128 amount,
@@ -118,6 +136,12 @@ contract JobsTokenVesting is Ownable, ReentrancyGuard {
 
     // --- VIEW FUNKCIJE ---
 
+    /**
+     * @notice Returns the amount of tokens that can be released for a vesting schedule
+     * @param beneficiary Address of the beneficiary
+     * @param index Index of the vesting schedule
+     * @return Amount of tokens that can be released (in token units with 18 decimals)
+     */
     function releasable(address beneficiary, uint256 index)
         public
         view
@@ -140,7 +164,10 @@ contract JobsTokenVesting is Ownable, ReentrancyGuard {
 
     // --- USER FUNKCIJA ---
 
-    /// @notice User povlači trenutno otključani dio za jedan schedule
+    /**
+     * @notice Releases the currently vested tokens for a specific vesting schedule
+     * @param index Index of the vesting schedule to release tokens from
+     */
     function release(uint256 index) external nonReentrant {
         uint256 amount = releasable(msg.sender, index);
         require(amount > 0, "Nothing releasable");
