@@ -43,6 +43,21 @@ security, and real-world robustness.
 - No upgradeability is assumed unless explicitly added
 
 ---
+## Design & Development Approach
+
+This protocol was designed and implemented with a
+**design-first and validation-first approach**.
+
+Key characteristics:
+
+- explicit threat modeling before implementation
+- clear separation of concerns between token, staking, and vesting logic
+- invariant-driven development
+- manual reasoning about reward accounting and access control
+- extensive testing before deployment
+
+Implementation decisions were made intentionally
+and validated through testing and analysis rather than trial-and-error.
 
 ## Build & Test
 
