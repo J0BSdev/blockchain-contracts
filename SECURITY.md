@@ -71,3 +71,6 @@ If a vulnerability is discovered:
 - Do not disclose publicly
 - Provide a clear description and reproduction steps
 - Contact: TBD
+
+Security decisions were informed by observed failure cases during development
+and validated through systematic testing and analysis.
