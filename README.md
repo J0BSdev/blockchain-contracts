@@ -1,68 +1,51 @@
-# 👨‍💻 Lovro Posel — Full-Stack Web3 Developer
+# Jobs Protocol
 
-Hi, I'm Lovro — a full-stack Web3 developer focused on building clean, fast, and scalable dApps using modern tools like Solidity, Foundry, Next.js, and wagmi v2.
-
----
-
-## 🔨 Tech Stack & Tools I Use
-
-### 🧱 Smart Contracts
-- **Solidity** — writing secure and gas-optimized smart contracts
-- **Foundry** — contract development, deployment, and testing framework
-- **Hardhat** (optional) — familiar with test environments and scripting
-
-### 🌐 Frontend dApp
-- **Next.js** — React-based framework for SSR + frontend logic
-- **Wagmi v2.17.5** — Ethereum React hooks for wallet interaction
-- **RainbowKit v2** — beautiful wallet UI/UX for multi-chain support
-- **Viem** — type-safe low-level Ethereum client
-- **TypeScript** — strict types and clean codebase
-- **JavaScript** — strong foundation and practical usage
-- **CSS (No Tailwind)** — manually styled interfaces
-
-### 🌍 Web3 Infrastructure
-- **IPFS (Pinata)** — NFT metadata and image hosting
-- **Etherscan** — contract verification and interaction
-- **Vercel** — deploy frontend with custom domains
-- **GitHub** — full version control, Git workflow, and CI
+Smart contract protocol consisting of an ERC20 token, staking, and vesting modules.
+Designed with production readiness, testing rigor, and security in mind.
 
 ---
 
-## 🔗 Recent Projects
+## Overview
 
-### 🖼️ NFT Minting dApp  
-A fully working minting application:
-- WalletConnect integration (RainbowKit)
-- NFT minting via `mint()` and `safeMint()` from ERC-721
-- tokenURI pulling image + metadata from IPFS
-- Loading states and UX polish
-- Mobile + desktop responsive
-- GitHub + Etherscan links integrated
-- Deployed on **Vercel**
+The protocol includes:
+- **ERC20 token** with access control, supply constraints, and safety features
+- **Staking contract** with reward accounting and security protections
+- **Vesting contract** for time-based token distribution
 
-> 🔗 [Live Demo](https://mint-d-app.vercel.app/)  
-> 💾 [GitHub Repo](https://github.com/LovroDev/JobsNFTFull)
+The system is built and tested using Foundry, with emphasis on correctness,
+security, and real-world robustness.
 
 ---
 
-## 🚀 Goals
+## Contracts
 
-- Continue building dApps on Ethereum and L2s (Base, Optimism, Arbitrum)
-- Contribute to open-source Web3 tools
-- Deliver freelance + client dApps (NFT drops, token launches, DeFi tools)
-- Grow as a blockchain engineer through real-world products
+- `JobsTokenFullV2.sol`
+  - ERC20 token implementation
+  - AccessControl-based roles
+  - Optional cap, pause, burn, and permit support
+
+- `JobsTokenStaking.sol`
+  - Stake / unstake / claim reward flow
+  - Reward accounting with pool updates
+  - Reentrancy protection and safe token handling
+
+- `JobsTokenVestingERC20.sol`
+  - Linear vesting schedules
+  - Claimable token tracking per beneficiary
 
 ---
 
-## 📬 Contact
+## Architecture Notes
 
-- Twitter / X: [@J0BSdev](https://x.com/J0BSdev)
-- GitHub: [LovroDev](https://github.com/J0BSdev)
-- Email: `lovro.posel79@gmail.com`
+- Staking and reward logic is separated from token logic
+- Reward accounting is updated on each user interaction
+- Access-controlled admin functions are isolated
+- No upgradeability is assumed unless explicitly added
 
 ---
 
-> ⚡️ Let's build the future on-chain.
+## Build & Test
 
-
-
+### Install dependencies
+```bash
+forge install
