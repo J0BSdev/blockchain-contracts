@@ -170,9 +170,10 @@ contract JobsTokenVestingERC20_Fuzz_Test is Test {
         }
         
         // Provjeri vested amount nakon vremena
-        // Bound timePassed da bude >= cliffDuration i <= duration
-        if (timePassed < cliffDuration) {
-            timePassed = cliffDuration;
+        // Bound timePassed da bude > cliffDuration (ne >=, jer na cliff-u je vested = 0)
+        // i <= duration
+        if (timePassed <= cliffDuration) {
+            timePassed = cliffDuration + 1; // +1 da osiguramo da je nakon cliff-a
         }
         if (timePassed > duration) {
             timePassed = duration;
@@ -183,6 +184,7 @@ contract JobsTokenVestingERC20_Fuzz_Test is Test {
         if (timePassed >= duration) {
             assertEq(vestedAfter, total, "Vested should equal total after duration");
         } else {
+            // timePassed > cliffDuration, tako da vested bi trebao biti > 0
             assertGt(vestedAfter, 0, "Vested should be > 0 after cliff");
             assertLt(vestedAfter, total, "Vested should be < total before duration ends");
         }
